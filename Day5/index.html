@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supply Stacks</title>
+  </head>
+  <body>
+    <h1>Supply Stacks</h1>
+    <script>
+      const smallInput = `    [D]
+[N] [C]
+[Z] [M] [P]
+ 1   2   3
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2`;
+
+      const lines = smallInput.split(/\n/);
+
+      let stacks = [];
+      const commands = [];
+      let stacksFinished = false;
+
+      lines.forEach((line) => {
+        if (line && !stacksFinished) {
+          stacks.push(line);
+        } else if (line && stacksFinished) {
+          commands.push(line);
+        } else {
+          stacksFinished = true;
+        }
+      });
+
+      const columns = {};
+      stacks.forEach((stack) => {
+        for (let i = 0; i < stack.length; i++) {
+          const char = stack[i];
+          if (char === '[') {
+            let item = stack.substr(i, 3);
+            let nr = i + 1;
+            let column = Math.ceil(nr / 4);
+            if (!columns[column]) {
+              columns[column] = [];
+            }
+            columns[column] = [...columns[column], item];
+          }
+        }
+      });
+
+      commands.forEach((commandLine) => {
+        const orders = commandLine.split(' ');
+        const nrOfElements = parseInt(orders[1]);
+        const from = orders[3];
+        const to = orders[5];
+        for (let i = 1; i <= nrOfElements; i++) {
+          const element = columns[from].shift();
+          columns[to].unshift(element);
+        }
+      });
+
+      let code = '';
+
+      Object.values(columns).forEach((column) => {
+        code = code + column[0][1];
+      });
+
+      console.log('Final Stacks:');
+      stacks.forEach((stack, index) => {
+        console.log(`Stack ${index + 1}: ${stack}`);
+      });
+
+      console.log('Code:', code);
+    </script>
+  </body>
+</html>
